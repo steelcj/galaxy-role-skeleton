@@ -1,0 +1,40 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Load the role's variables
+      ansible.builtin.include_vars:
+        file: "{{ '{{' }} item {{ '}}' }}"
+      loop:
+        - "{{ '{{' }} playbook_dir {{ '}}' }}/../../vars/main.yml"
+        - "{{ '{{' }} playbook_dir {{ '}}' }}/../../defaults/main.yml"
+
+    - name: Gather package facts
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Test if the role's packages are installed
+      ansible.builtin.assert:
+        that:
+          - item in ansible_facts['packages']
+        quiet: true
+      loop: "{{ '{{' }} {{ role_name }}_packages {{ '}}' }}"
+
+    - name: Read the state of the service
+      ansible.builtin.systemd_service:
+        name: "{{ '{{' }} {{ role_name }}_service {{ '}}' }}"
+      register: verify_service
+      when:
+        - {{ role_name }}_service | length > 0
+
+    - name: Test if the service is active and enabled
+      ansible.builtin.assert:
+        that:
+          - verify_service.status.ActiveState == 'active'
+          - verify_service.status.UnitFileState == 'enabled'
+        quiet: true
+      when:
+        - {{ role_name }}_service | length > 0

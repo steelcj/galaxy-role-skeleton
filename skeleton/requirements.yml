@@ -1,0 +1,3 @@
+---
+# The role's own collections. Molecule's are in molecule/default/requirements.yml.
+collections: []

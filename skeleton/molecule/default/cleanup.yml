@@ -1,0 +1,7 @@
+---
+# Molecule runs this after a failed action. Nothing to clean up yet: the
+# destroy step deletes the container.
+- name: Cleanup
+  hosts: all
+  gather_facts: false
+  tasks: []

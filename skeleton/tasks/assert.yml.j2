@@ -1,0 +1,23 @@
+---
+
+- name: Test if {{ role_name }}_packages is set correctly
+  ansible.builtin.assert:
+    that:
+      - {{ role_name }}_packages is defined
+      - {{ role_name }}_packages is sequence
+      - {{ role_name }}_packages is not string
+    quiet: true
+
+- name: Test if {{ role_name }}_service is set correctly
+  ansible.builtin.assert:
+    that:
+      - {{ role_name }}_service is defined
+      - {{ role_name }}_service is string
+    quiet: true
+
+- name: Test if {{ role_name }}_skip_connections is set correctly
+  ansible.builtin.assert:
+    that:
+      - {{ role_name }}_skip_connections is sequence
+      - {{ role_name }}_skip_connections is not string
+    quiet: true

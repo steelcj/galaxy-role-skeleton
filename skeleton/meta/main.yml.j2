@@ -1,0 +1,18 @@
+---
+galaxy_info:
+  namespace: steelcj
+  role_name: {{ role_name }}
+  author: Christopher Steel
+  description: Install and configure {{ role_name }}.
+  license: MIT
+  min_ansible_version: "2.15"
+
+  platforms:
+    - name: Debian
+      versions:
+        - trixie
+
+  galaxy_tags:
+    - {{ role_name | replace('_', '') }}
+
+dependencies: []

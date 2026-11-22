@@ -1,0 +1,95 @@
+# [Ansible role {{ role_name }}](#{{ role_name }})
+
+Install and configure {{ role_name }}.
+
+## [Example Playbook](#example-playbook)
+
+This example is taken from [`molecule/default/converge.yml`](molecule/default/converge.yml). There is no CI yet: the scenario is run by hand against an Incus container, as described in [Testing](#testing).
+
+```yaml
+---
+- name: Converge
+  hosts: all
+  become: true
+  gather_facts: true
+
+  roles:
+    - role: steelcj.{{ role_name }}
+```
+
+The machine needs to be prepared. In testing this is done using [`molecule/default/prepare.yml`](molecule/default/prepare.yml):
+
+```yaml
+---
+- name: Prepare
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Install Python, python3-apt and sudo
+      ansible.builtin.raw: >-
+        (command -v sudo && python3 -c "import apt") >/dev/null 2>&1 ||
+        (apt-get update -q && apt-get install -y -q python3 python3-apt sudo)
+      changed_when: false
+```
+
+On real hosts, [robertdebock.bootstrap](https://github.com/robertdebock/ansible-role-bootstrap) does the same.
+
+## [Role Variables](#role-variables)
+
+The default values for the variables are set in [`defaults/main.yml`](defaults/main.yml):
+
+```yaml
+---
+# defaults file for {{ role_name }}
+
+# Packages to install. The distribution's package names are in vars/main.yml.
+# Set this to install a different list.
+{{ role_name }}_packages: "{{ '{{' }} _{{ role_name }}_packages_resolved {{ '}}' }}"
+
+# The service to start and enable, or an empty string for none.
+{{ role_name }}_service: ""
+
+# Connections where the service is not started, such as Docker containers.
+{{ role_name }}_skip_connections:
+  - container
+  - docker
+  - community.docker.docker
+```
+
+## [Requirements](#requirements)
+
+- ansible-core 2.15 or later. The role itself uses ansible-core modules only.
+- For the Molecule scenario: Molecule, the `incus` client with permission to use it, and the `community.general` collection for the `community.general.incus` connection plugin, listed in [`molecule/default/requirements.yml`](molecule/default/requirements.yml).
+
+## [Testing](#testing)
+
+The Molecule scenario launches `images:debian/13` as an Incus system container on the machine running Molecule, converges the role over `incus exec`, runs it again to prove it is idempotent, verifies the result and deletes the container:
+
+```sh
+molecule test
+```
+
+The full procedure, from setting up a virtual environment to finding the cause of a failure, is in the [Molecule testing guide](en/docs/guides/manual-testing/molecule-incus-testing-v0.1.0.md).
+
+| Date | Version | Platform | Result |
+| :-- | :-- | :-- | :-- |
+
+## [Compatibility](#compatibility)
+
+This role has been written for these platforms:
+
+| container | tags |
+| :-- | :-- |
+| Debian | trixie |
+
+## [Roadmap](#roadmap)
+
+Planned and possible work is in [`ROADMAP.md`](ROADMAP.md).
+
+## [License](#license)
+
+MIT
+
+## [Author Information](#author-information)
+
+Christopher Steel. Structure and conventions follow the roles of [Robert de Bock](https://github.com/robertdebock).

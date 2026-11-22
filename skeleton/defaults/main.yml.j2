@@ -1,0 +1,15 @@
+---
+# defaults file for {{ role_name }}
+
+# Packages to install. The distribution's package names are in vars/main.yml.
+# Set this to install a different list.
+{{ role_name }}_packages: "{{ '{{' }} _{{ role_name }}_packages_resolved {{ '}}' }}"
+
+# The service to start and enable, or an empty string for none.
+{{ role_name }}_service: ""
+
+# Connections where the service is not started, such as Docker containers.
+{{ role_name }}_skip_connections:
+  - container
+  - docker
+  - community.docker.docker

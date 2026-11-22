@@ -1,0 +1,10 @@
+---
+# vars file for {{ role_name }}
+
+# Package names per distribution. Each lookup tries the distribution and major
+# version (Debian-13), then the distribution (Debian), then the OS family
+# (RedHat), then default.
+_{{ role_name }}_packages:
+  default: []
+
+_{{ role_name }}_packages_resolved: "{{ '{{' }} _{{ role_name }}_packages[ansible_facts['distribution'] ~ '-' ~ ansible_facts['distribution_major_version']] | default(_{{ role_name }}_packages[ansible_facts['distribution']] | default(_{{ role_name }}_packages[ansible_facts['os_family']] | default(_{{ role_name }}_packages['default']))) {{ '}}' }}"

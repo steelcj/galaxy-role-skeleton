@@ -1,0 +1,24 @@
+---
+# tasks file for {{ role_name }}
+
+- name: Import assert.yml
+  ansible.builtin.import_tasks:
+    file: assert.yml
+  run_once: true
+  delegate_to: localhost
+
+- name: Install required software
+  ansible.builtin.package:
+    name: "{{ '{{' }} {{ role_name }}_packages {{ '}}' }}"
+    state: present
+  when:
+    - {{ role_name }}_packages | length > 0
+
+- name: Start and enable the service
+  ansible.builtin.systemd_service:
+    name: "{{ '{{' }} {{ role_name }}_service {{ '}}' }}"
+    state: started
+    enabled: true
+  when:
+    - {{ role_name }}_service | length > 0
+    - ansible_connection not in {{ role_name }}_skip_connections
